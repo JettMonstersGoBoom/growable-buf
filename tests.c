@@ -10,6 +10,32 @@ test_abort(void)
     longjmp(escape, 1);
 }
 
+// #define CUSTOM_ALLOC
+#ifdef CUSTOM_ALLOC
+#include <stdlib.h>
+void *my_malloc(size_t size)
+{
+    printf("malloc %x\n",size);
+    return malloc(size);    
+}
+
+void *my_realloc(void *ptr,size_t size)
+{
+    printf("realloc %x %x\n",ptr,size);
+    return realloc(ptr,size);    
+}
+
+void my_free(void *ptr)
+{
+    printf("free %x\n",ptr);
+    free(ptr);
+}
+
+#define BUF_MALLOC(x) my_malloc(x)
+#define BUF_REALLOC(x,y) my_realloc(x,y)
+#define BUF_FREE(x) my_free(x)
+#endif
+
 #define BUF_ABORT test_abort()
 #include "buf.h"
 
@@ -92,7 +118,7 @@ main(int argc, char **argv)
 {
     /* Benchtest? */
     if (argc > 1) {
-        uint64_t rng = strtoull(argv[1], 0, 16);
+        uint64_t rng = strtoul(argv[1], 0, 16);
         unsigned long r = 0;
         uint64_t start = uepoch();
         for (int i = 0; i < 300; i++)

@@ -34,6 +34,18 @@
 #  define BUF_ABORT abort()
 #endif
 
+#ifndef BUF_MALLOC 
+#define BUF_MALLOC malloc 
+#endif 
+
+#ifndef BUF_REALLOC 
+#define BUF_REALLOC realloc 
+#endif 
+
+#ifndef BUF_FREE 
+#define BUF_FREE free 
+#endif 
+
 struct buf {
     size_t capacity;
     size_t size;
@@ -46,7 +58,7 @@ struct buf {
 #define buf_free(v) \
     do { \
         if (v) { \
-            free(buf_ptr((v))); \
+            BUF_FREE(buf_ptr((v))); \
             (v) = 0; \
         } \
     } while (0)
@@ -90,7 +102,7 @@ buf_grow1(void *v, size_t esize, ptrdiff_t n)
         p = buf_ptr(v);
         if (n > 0 && p->capacity + n > max / esize)
             goto fail; /* overflow */
-        p = realloc(p, sizeof(struct buf) + esize * (p->capacity + n));
+        p = BUF_REALLOC(p, sizeof(struct buf) + esize * (p->capacity + n));
         if (!p)
             goto fail;
         p->capacity += n;
@@ -99,7 +111,7 @@ buf_grow1(void *v, size_t esize, ptrdiff_t n)
     } else {
         if ((size_t)n > max / esize)
             goto fail; /* overflow */
-        p = malloc(sizeof(struct buf) + esize * n);
+        p = BUF_MALLOC(sizeof(struct buf) + esize * n);
         if (!p)
             goto fail;
         p->capacity = n;
