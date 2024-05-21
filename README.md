@@ -88,5 +88,13 @@ on undefined behavior. This does so by using a flexible array member and
 the `offsetof()` macro. It also checks for integer overflows before
 allocating any memory, making it safer.
 
+## Addendum
+added ```#define``` for BUF_MALLOC,BUF_REALLOC,and BUF_FREE to allow more flexible memory management.
+
+see ```#ifdef CUSTOM_ALLOC``` section in test.c. 
+
+
+
+
 
 [sb]: https://github.com/nothings/stb/blob/master/stretchy_buffer.h
